@@ -17,28 +17,36 @@ async function checkWeather(city){
 
         if (data.weather[0].main==='Clear'){
             weatherImage.src='clear.png';
+            description.textContent='Clear';
+
         }
         else if(data.weather[0].main=='Clouds'){
             weatherImage.src='clouds.png';
+            description.textContent='Clouds';
         }
         else if(data.weather[0].main==='Mist'){
             weatherImage.src='mist.png';
+            description.textContent='Mist';
         }
         else if(data.weather[0].main==='Drizzle'){
             weatherImage.src='drizzle.png';
+            description.textContent='Drizzle';
         }
         else if(data.weather[0].main==='Rain'){
             weatherImage.src='rain.png';
+            description.textContent='Rain';
         }
         else if(data.weather[0].main==='Snow'){
             weatherImage.src='snow.png';
+            description.textContent='Snow';
         }
 
         document.querySelector('.weather').style.display='block';
+        document.querySelector('.error').style.display='none';
     }
 }
 
-
+let description=document.querySelector('.description');
 let searchInput=document.querySelector('.search input');
 let searchButton=document.querySelector('.search button');
 let weatherImage=document.querySelector('.weather-icon');
