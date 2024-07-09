@@ -1,200 +1,64 @@
-// INTERSECTION OBSERVER
+let apiKey='8ab75096a2dba5f60662e3c0195c2509';
+let apiURL='https://api.openweathermap.org/data/2.5/weather?units=metric&q=';
 
-const cards=document.querySelectorAll('.project');
+async function checkWeather(city){
+    let response =await fetch(apiURL + city + `&appid=${apiKey}`);
+    let data= await response.json();
 
-const observer= new IntersectionObserver((entries)=>{
-    entries.forEach(entry=>{
-        entry.target.classList.toggle("show",entry.isIntersecting)
-        if (entry.isIntersecting){
-            observer.unobserve(entry.target);
-        }
-    })
-}, {
-    threshold:0.15,
-})
-
-cards.forEach(card =>{
-    observer.observe(card);
-})
-
-
-
-// Back to top
-
-let backTOTopButton=document.querySelector('.left-content-header');
-
-backTOTopButton.addEventListener('click',()=> {
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-})
-
-let homeButton=document.querySelector('.home-button');
-homeButton.addEventListener('click',(event)=>{
-    event.preventDefault();
-    window.scrollTo({
-        top:0,
-        behavior:"smooth",
-    });
-})
-
-// Media query
-
-let targetBlock=document.querySelector('.project');
-
-function updateTargetContent(){
-    let windowWidth=window.innerWidth;
-    if (windowWidth<1000){
-        targetBlock.innerHTML=`
-        <div class="project-left-area-upper">
-            <h1>Weather Website</h1>
-            <p>Wanna know weather? <br> It's here!</p>
-        </div>
-        <div class="project-right-area">
-            <a style="border-radius:20px;" href="https://karunans2004.github.io/Weather-website-firsty-try/" target="_blank"><img src="project 1.jpg" alt="first-project" class="first-project-pic"></a>
-        </div>
-        <div class="project-left-area">
-            <a href="https://karunans2004.github.io/Weather-website-firsty-try/" target="_blank" class="project-one"><h1>View <img src="in-new-tab.svg" alt=""></h1></a>
-         </div>   
-        `;
+    if (data.name===undefined){
+        document.querySelector('.weather').style.display="none";
+        document.querySelector('.error').style.display='block';
+        return;
     }else{
-        targetBlock.innerHTML=`
-        <div class="project-left-area">
-            <div class="project-left-area-upper">
-                <h1>Weather Website</h1>
-                <p>Wanna know weather? <br> It's here!</p>
-            </div>
-            <a href="https://karunans2004.github.io/Weather-website-firsty-try/" target="_blank" class="project-one"><h1>View <img src="in-new-tab.svg" alt=""></h1></a>
-        </div>
-        <div class="project-right-area">
-            <a href="https://karunans2004.github.io/Weather-website-firsty-try/" target="_blank"><img src="project 1.jpg" alt="first-project" class="first-project-pic"></a>
-        </div>
-        `
+        document.querySelector('.city').innerHTML=data.name;
+        document.querySelector('.temp').innerHTML=Math.round(data.main.temp) + "°C";
+        document.querySelector('.humidity').innerHTML=`${data.main.humidity}%`;
+        document.querySelector('.wind').innerHTML=Math.round(data.wind.speed) + "Km/h";
+
+        if (data.weather[0].main==='Clear'){
+            weatherImage.src='clear.png';
+            description.textContent='Clear';
+
+        }
+        else if(data.weather[0].main=='Clouds'){
+            weatherImage.src='clouds.png';
+            description.textContent='Clouds';
+        }
+        else if(data.weather[0].main==='Mist'){
+            weatherImage.src='mist.png';
+            description.textContent='Mist';
+        }
+        else if(data.weather[0].main==='Drizzle'){
+            weatherImage.src='drizzle.png';
+            description.textContent='Drizzle';
+        }
+        else if(data.weather[0].main==='Rain'){
+            weatherImage.src='rain.png';
+            description.textContent='Rain';
+        }
+        else if(data.weather[0].main==='Snow'){
+            weatherImage.src='snow.png';
+            description.textContent='Snow';
+        }
+
+        document.querySelector('.weather').style.display='block';
+        document.querySelector('.error').style.display='none';
     }
 }
 
-window.addEventListener('load', updateTargetContent);
-window.addEventListener('resize', updateTargetContent);
+let description=document.querySelector('.description');
+let searchInput=document.querySelector('.search input');
+let searchButton=document.querySelector('.search button');
+let weatherImage=document.querySelector('.weather-icon');
 
-
-
-// Animated navigation bar
-
-
-let windowWidth=window.innerWidth;
-if (windowWidth<1100){
-  let menuIconButton=document.querySelector('.menu-icon');
-  let closeIconButton=document.querySelector('.close-icon');
-  let topHeader=document.querySelector('.top');
-  let rightContentHeader=document.querySelector('.right-content-header');
-
-
-  menuIconButton.style.display='block';
-    let listOfHeaders=document.querySelectorAll('.tab');
-    listOfHeaders.forEach((item)=>{
-      item.style.display='none';
-    });
-  menuIconButton.addEventListener('click', (e)=>{
-    topHeader.style.height='100%';
-    rightContentHeader.style.height='100%';
-    menuIconButton.style.display='none';
-    closeIconButton.style.display='block';
-    listOfHeaders.forEach((item)=>{
-      item.style.display='block';
-    });
-    listOfHeaders.forEach((item)=>{
-      item.addEventListener('click',(e)=>{
-        let newTop=document.querySelector('.top');
-        newTop.style.height='initial';
-        listOfHeaders.forEach((item)=>{
-          item.style.display='none';
-        });
-        menuIconButton.style.display='block';
-        closeIconButton.style.display='none';
-      });
-    });
-  });
-
-  closeIconButton.addEventListener('click', (e)=>{
-    closeIconButton.style.display='none';
-    menuIconButton.style.display='block';
-    topHeader.style.height='initial';
-    listOfHeaders.forEach((item)=>{
-      item.style.display='none';
-    });
-  });
-}
-
-
-window.addEventListener('resize',()=>{
-  let windowWidth=window.innerWidth;
-  if (windowWidth<1100){
-    toggle(true);
-    return;
-  }else if(windowWidth>1100){
-    removeToggle(true);
-    return;
-  }
+searchButton.addEventListener("click",()=> {
+    checkWeather(searchInput.value);
 })
 
-function toggle(isSmaller){
-  let menuIconButton=document.querySelector('.menu-icon');
-  let closeIconButton=document.querySelector('.close-icon');
-  let topHeader=document.querySelector('.top');
-  let rightContentHeader=document.querySelector('.right-content-header');
-  menuIconButton.style.display='block';
-  closeIconButton.style.display='none';
-  topHeader.style.height='initial';
-  let listOfHeaders=document.querySelectorAll('.tab');
-  listOfHeaders.forEach((item)=>{
-    item.style.display='none';
-  });
-
-  menuIconButton.addEventListener('click', (e)=>{
-    topHeader.style.height='100%';
-    rightContentHeader.style.height='100%';
-    menuIconButton.style.display='none';
-    closeIconButton.style.display='block';
-    listOfHeaders.forEach((item)=>{
-      item.style.display='block';
-    });
-
-    listOfHeaders.forEach((item)=>{
-      item.addEventListener('click',(e)=>{
-        let newTop=document.querySelector('.top');
-        newTop.style.height='initial';
-        listOfHeaders.forEach((item)=>{
-          item.style.display='none';
-        });
-        menuIconButton.style.display='block';
-        closeIconButton.style.display='none';
-      });
-    });
-  });
-  closeIconButton.addEventListener('click', (e)=>{
-    closeIconButton.style.display='none';
-    menuIconButton.style.display='block';
-    topHeader.style.height='initial';
-    listOfHeaders.forEach((item)=>{
-      item.style.display='none';
-    });
-  });
-
-
+function checkForEnterKey(event){
+    if (event.key==='Enter'){
+        checkWeather(searchInput.value);
+    }
 }
 
-function removeToggle(islarger){
-  let menuIconButton=document.querySelector('.menu-icon');
-  let closeIconButton=document.querySelector('.close-icon');
-  let topHeader=document.querySelector('.top');
-  let rightContentHeader=document.querySelector('.right-content-header');
-  topHeader.style.height='initial';
-  rightContentHeader.style.alignItems='center';
-  closeIconButton.style.display='none';
-  menuIconButton.style.display='none';
-  let listOfHeaders=document.querySelectorAll('.tab');
-  listOfHeaders.forEach((item)=>{
-    item.style.display='block';
-  });
-}
+searchInput.addEventListener('keydown',checkForEnterKey);
